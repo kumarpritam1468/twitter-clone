@@ -75,21 +75,22 @@ const likePost = async (req, res) => {
         const alreadyLiked = post.likes.includes(currentUserId);
 
         if (alreadyLiked) {
-            post.likes.pop(currentUserId);
+            await Post.updateOne({ _id: postId }, { $pull: { likes: currentUserId } });
+            await User.updateOne({ _id: currentUserId }, { $pull: { likedPosts: postId } });
             res.status(200).json({ message: "Post disliked Successfully" });
         } else {
-            post.likes.push(currentUserId);
+            await Post.updateOne({ _id: postId }, { $push: { likes: currentUserId } });
+            await User.updateOne({ _id: currentUserId }, { $push: { likedPosts: postId } });
+            const notification = new Notification({
+                from: currentUserId,
+                to: post.user,
+                type: "like"
+            });
+
+            await post.save();
+            await notification.save();
             res.status(200).json({ message: "Post liked Successfully" });
         }
-
-        const notification = new Notification({
-            from: currentUserId,
-            to: post.user,
-            type: "like"
-        });
-
-        await post.save();
-        await notification.save();
 
     } catch (error) {
         res.status(500).json(error.message);
@@ -124,4 +125,100 @@ const commentPost = async (req, res) => {
     }
 }
 
-export { createPost, deletePost, likePost, commentPost };
+const getAllPosts = async (req, res) => {
+    try {
+        const posts = await Post.find().sort({ createdAt: -1 })
+            .populate({
+                path: 'user',
+                select: '-password'
+            })
+            .populate({
+                path: 'comments.user',
+                select: '-password'
+            })
+
+        if (!posts) {
+            return res.status(200).json([]);
+        }
+
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+}
+
+const getLikedPosts = async (req, res) => {
+    try {
+        const { id: userId } = req.params;
+
+        const user = await User.findById(userId);
+
+        if (!user) return res.status(400).json({ error: "User not found" });
+
+        const likes = await Post.find({ _id: { $in: user.likedPosts } })
+            .populate({
+                path: "user",
+                select: "-password"
+            })
+            .populate({
+                path: "comments.user",
+                select: "-password"
+            });
+
+        res.status(200).json(likes);
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+}
+
+const getFollowingPosts = async (req, res) => {
+    try {
+        const userId = req.user._id.toString();
+
+        const user = await User.findById(userId);
+
+        if (!user) return res.status(400).json({ error: "User not found" });
+
+        const following = user.following;
+
+        const followingPosts = await Post.find({ user: { $in: following } }).sort({ createdAt: -1 })
+            .populate({
+                path: "user",
+                select: "-password"
+            })
+            .populate({
+                path: "comments.user",
+                select: "-password"
+            });
+
+        res.status(200).json(followingPosts);
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+}
+
+const getUserPosts = async (req, res) => {
+    try {
+        const username = req.params;
+
+        const user = await User.findOne({ username });
+
+        if (!user) return res.status(400).json({ error: "User not found" });
+
+        const posts = await Post.find({ user: user._id }).sort({ createdAt: -1 })
+            .populate({
+                path: "user",
+                select: "-password"
+            })
+            .populate({
+                path: "comments.user",
+                select: "-password"
+            });
+
+        res.status(200).json(posts);
+    } catch (error) {
+        res.status(500).json(error.message);
+    }
+}
+
+export { createPost, deletePost, likePost, commentPost, getAllPosts, getLikedPosts, getFollowingPosts, getUserPosts };

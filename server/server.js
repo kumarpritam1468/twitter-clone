@@ -3,10 +3,11 @@ import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import { v2 as cloudinary } from 'cloudinary';
 
+import connectToDB from "./db/conn.js";
 import authRoute from "./routes/authRoute.js";
 import userRoute from "./routes/userRoute.js";
 import postRoute from "./routes/postRoute.js";
-import connectToDB from "./db/conn.js";
+import notificationRoute from "./routes/notificationRoute.js";
 
 dotenv.config();
 cloudinary.config({
@@ -24,6 +25,7 @@ app.use(cookieParser());
 app.use('/api/auth', authRoute);
 app.use('/api/users', userRoute);
 app.use('/api/post', postRoute);
+app.use('/api/notifications', notificationRoute);
 
 app.listen(PORT, () => {
     console.log(`Server running on PORT ${PORT}`);

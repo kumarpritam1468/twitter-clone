@@ -4,16 +4,12 @@ import bcrypt from "bcryptjs";
 
 const signup = async (req, res) => {
     try {
-        const { fullname, username, email, password, cPassword } = req.body;
+        const { fullname, username, email, password } = req.body;
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(email)) {
             return res.status(400).json({ error: "Email is invalid" });
-        }
-
-        if (password !== cPassword) {
-            return res.status(400).json({ error: "Password and confirm password should match" });
         }
 
         if (password.length < 6) {
@@ -56,9 +52,8 @@ const signup = async (req, res) => {
                 profileImg: newUser.profileImg,
                 coverImg: newUser.coverImg,
             });
-        } else {
-            return res.status(400).json({ error: "Invalid user data" });
         }
+        res.status(400).json({ error: "Invalid user data" });
     } catch (error) {
         res.status(500).json({ error: "Internal Server Error" });
     }
@@ -96,7 +91,7 @@ const logout = async (req, res) => {
     try {
         res.cookie('jwt', '', { maxAge: 0 });
 
-        res.status(200).json({message:"Logged out succeddfully"});
+        res.status(200).json({ message: "Logged out succeddfully" });
     } catch (error) {
         res.status(500).json({ error: "Internal server error" });
     }
@@ -107,7 +102,7 @@ const getMe = async (req, res) => {
         const user = await User.findById(req.user._id).select("-password");
         res.status(200).json(user);
     } catch (error) {
-        res.status(500).json({error:"Internal server error"});
+        res.status(500).json({ error: "Internal server error" });
     }
 }
 

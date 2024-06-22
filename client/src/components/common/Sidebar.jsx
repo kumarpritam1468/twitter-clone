@@ -23,7 +23,7 @@ const Sidebar = () => {
 
                 const data = await response.json();
 
-                if (!response.ok) throw new Error(data.error);
+                if (!response.ok) throw new Error(data.error || "Something went wrong");
                 if (data.error) {
                     throw new Error(data.error);
                 }

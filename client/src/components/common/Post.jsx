@@ -21,7 +21,7 @@ const Post = ({ post }) => {
 				})
 				const data = await response.json();
 
-				if (!response.ok) throw new Error(data.error);
+				if (!response.ok) throw new Error(data.error || "Something Went Wrong");
 
 				return data;
 			} catch (error) {

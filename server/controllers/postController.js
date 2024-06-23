@@ -77,19 +77,23 @@ const likePost = async (req, res) => {
         if (alreadyLiked) {
             await Post.updateOne({ _id: postId }, { $pull: { likes: currentUserId } });
             await User.updateOne({ _id: currentUserId }, { $pull: { likedPosts: postId } });
-            res.status(200).json({ message: "Post disliked Successfully" });
+
+            const updatedLikes = post.likes.filter((id) => id.toString() !== currentUserId.toString());
+
+            res.status(200).json(updatedLikes);
         } else {
-            await Post.updateOne({ _id: postId }, { $push: { likes: currentUserId } });
+            post.likes.push(currentUserId);
             await User.updateOne({ _id: currentUserId }, { $push: { likedPosts: postId } });
+            await post.save();
             const notification = new Notification({
                 from: currentUserId,
                 to: post.user,
                 type: "like"
             });
 
-            await post.save();
             await notification.save();
-            res.status(200).json({ message: "Post liked Successfully" });
+            const updatedLikes = post.likes;
+            res.status(200).json(updatedLikes);
         }
 
     } catch (error) {

@@ -20,7 +20,7 @@ function App() {
     queryKey: ['authUser'],
     queryFn: async () => {
       try {
-        const response = await fetch('/api/auth/me');
+        const response = await fetch('/api/auth/me'); 
         const data = await response.json();
 
         if(data.error) return null;

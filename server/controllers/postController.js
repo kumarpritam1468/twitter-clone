@@ -203,7 +203,7 @@ const getFollowingPosts = async (req, res) => {
 
 const getUserPosts = async (req, res) => {
     try {
-        const username = req.params;
+        const {username} = req.params;
 
         const user = await User.findOne({ username });
 

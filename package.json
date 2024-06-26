@@ -2,7 +2,7 @@
   "name": "twitter",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "server/server.js",
   "scripts": {
     "server": "nodemon server/server.js",
     "client": "cd client && npm run dev",

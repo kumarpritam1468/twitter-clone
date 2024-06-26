@@ -24,6 +24,13 @@ const __dirname = path.resolve();
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 
+
+
+app.use('/api/auth', authRoute);
+app.use('/api/users', userRoute);
+app.use('/api/post', postRoute);
+app.use('/api/notifications', notificationRoute);
+
 if (process.env.NODE_ENV !== "developement") {
     app.use(express.static(path.join(__dirname, "/client/dist")));
 
@@ -31,12 +38,6 @@ if (process.env.NODE_ENV !== "developement") {
         res.sendFile(path.resolve(__dirname, "client", "dist", "index.html"));
     });
 }
-
-
-app.use('/api/auth', authRoute);
-app.use('/api/users', userRoute);
-app.use('/api/post', postRoute);
-app.use('/api/notifications', notificationRoute);
 
 app.listen(PORT, () => {
     console.log(`Server running on PORT ${PORT}`);

@@ -16,7 +16,7 @@ const EditProfileModal = ({authUser}) => {
 	const queryClient = useQueryClient();
 
 	const { mutate: update, isPending: isUpdating } = useMutation({
-		mutationFn: async () => {
+		mutationFn: async (formData) => {
 			try {
 				const response = await fetch('/api/users/update', {
 					method: "POST",
@@ -57,7 +57,7 @@ const EditProfileModal = ({authUser}) => {
 				currentPassword: "",
 			})
 		}
-	})
+	}, []);
 
 	return (
 		<>
@@ -137,7 +137,7 @@ const EditProfileModal = ({authUser}) => {
 							name='link'
 							onChange={handleInputChange}
 						/>
-						<button className='btn btn-primary rounded-full btn-sm text-white' onClick={() => update()}>
+						<button className='btn btn-primary rounded-full btn-sm text-white' onClick={() => update(formData)}>
 							{isUpdating ? 'Updating...' : 'Update'}
 						</button>
 					</form>

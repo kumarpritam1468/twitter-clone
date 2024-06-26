@@ -9,7 +9,7 @@ const CreatePost = () => {
 	const [text, setText] = useState("");
 	const [img, setImg] = useState(null);
 
-	const {authUser} = useQuery({queryKey:['authUser']});
+	const {data:authUser} = useQuery({queryKey:['authUser']});
 	const queryClient = useQueryClient();
 
 	const imgRef = useRef(null);

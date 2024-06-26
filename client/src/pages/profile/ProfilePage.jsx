@@ -60,8 +60,8 @@ const ProfilePage = () => {
 		}
 	};
 
-	const { mutate: update, isPending: isUpdating } = useMutation({
-		mutationFn: async () => {
+	const { mutateAsync: update, isPending: isUpdating } = useMutation({
+		mutationFn: async ({coverImg, profileImg}) => {
 			try {
 				const response = await fetch('/api/users/update', {
 					method: "POST",
@@ -86,6 +86,7 @@ const ProfilePage = () => {
 			toast.success("Profile Updated");
 			queryClient.invalidateQueries({queryKey:['authUser']});
 			queryClient.invalidateQueries({queryKey:['userProfile']});
+			queryClient.invalidateQueries({queryKey:['posts']});
 		}
 	});
 
@@ -169,7 +170,11 @@ const ProfilePage = () => {
 								{(coverImg || profileImg) && (
 									<button
 										className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
-										onClick={() => update()}
+										onClick={async () => {
+											await update({coverImg, profileImg});
+											setCoverImg(null);
+											setProfileImg(null);
+										}}
 									>
 										{isUpdating ? 'Updating...' : 'Update'}
 									</button>

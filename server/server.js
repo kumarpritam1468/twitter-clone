@@ -24,7 +24,7 @@ const __dirname = path.resolve();
 app.use(express.json({ limit: '5mb' }));
 app.use(cookieParser());
 
-if (process.env.NODE_ENV === "production") {
+if (process.env.NODE_ENV !== "developement") {
     app.use(express.static(path.join(__dirname, "/client/dist")));
 
     app.get("*", (req, res) => {

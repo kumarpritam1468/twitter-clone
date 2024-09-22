@@ -129,7 +129,7 @@ const updateUserProfile = async (req, res) => {
 
 const getSuggestedUsers = async (req, res) => {
     try {
-        const userId = req.user._id;
+        const userId = req.user._id.toString();
 
         const myFollowings = await User.findById(userId).select("following");
 
@@ -153,6 +153,7 @@ const getSuggestedUsers = async (req, res) => {
 
         res.status(200).json(suggestedUsers);
     } catch (error) {
+        console.log(error);
         res.status(500).json(error.message);
     }
 }
